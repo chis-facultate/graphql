@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Page</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+<label for="myTextBox">Enter Text: </label>
+<input type="text" id="myTextBox" placeholder="Type something...">
+
+<!-- btn1 -->
+<button id="myButton">Click Me</button>
+<!-- btn2 -->
+<button id="id_btn2">graph ql</button>
+
+<script>
+    $(document).ready(function () {
+
+        //btn1
+
+        // Attach a click event handler to the button
+        $("#myButton").on("click", function () {
+            // Get the value from the text box
+            let inputValue = $("#myTextBox").val();
+
+            // Make an AJAX GET request to the /x endpoint on localhost with the text box value
+            $.ajax({
+                url: `http://localhost:8080/search/${inputValue}`,
+                type: 'GET',
+                success: function (data) {
+                    console.log('Success:', data);
+                    // Handle the response data as needed
+
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                    // Handle the error as needed
+                }
+            });
+        });
+
+        //btn2
+
+        $("#id_btn2").on("click", function () {
+            // query
+            let query =
+                `query GetBookByName($bookName: String!) {
+                    bookByName(bookName: $bookName) {
+                        name
+                        author
+                     }
+                }`
+
+            // Variables to be used in the GraphQL query
+            let variables = {
+                bookName: $("#myTextBox").val()
+            };
+
+            // Send a POST request to your GraphQL server
+            $.ajax({
+                url: 'http://localhost:8080/graphql',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ query: query, variables: variables }),
+                success: function(response) {
+                    let book = response.data.bookByName;
+                    console.log(book);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+    });
+</script>
+
+</body>
+</html>
